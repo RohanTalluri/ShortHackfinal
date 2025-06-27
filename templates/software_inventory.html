@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-orange: #ff6b35;
+    --light-orange: #fff0eb;
+    --dark-blue: #2d3748;
+    --gray-600: #718096;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --transition: all 0.2s ease;
+}
+
+.container-fluid {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    bottom: 0;
+    padding: 1.5rem;
+    background: #f8fafc;
+    overflow-y: auto;
+}
+
+.container-fluid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container-fluid::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.container-fluid::-webkit-scrollbar-thumb {
+    background-color: #718096;
+    border-radius: 4px;
+}
+
+.scroll-container {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.category-section {
+    margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.category-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-blue);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-title i {
+    color: var(--primary-orange);
+}
+
+.software-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 220px);
+    grid-template-rows: repeat(2, auto);
+    grid-auto-flow: column dense;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    min-height: 400px;
+}
+
+.software-card {
+    width: 220px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.software-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.software-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.software-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--light-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.software-icon i {
+    color: var(--primary-orange);
+    font-size: 1rem;
+}
+
+.software-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.software-name {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.software-vendor {
+    color: var(--gray-600);
+    font-size: 0.8rem;
+}
+
+.software-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.stat-item {
+    font-size: 0.8rem;
+}
+
+.stat-label {
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    color: var(--dark-blue);
+    font-weight: 500;
+}
+
+.progress-container {
+    margin-bottom: 0.5rem;
+}
+
+.progress {
+    height: 4px;
+    background: var(--light-orange);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.progress-bar.high {
+    background: #48bb78;
+}
+
+.progress-bar.medium {
+    background: #ecc94b;
+}
+
+.progress-bar.low {
+    background: #f56565;
+}
+
+.badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.badge-active {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.badge-expiring {
+    background: #fefcbf;
+    color: #975a16;
+}
+
+.badge-expired {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.badge-low {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.view-all {
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="scroll-container">
+        <!-- Active Software Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <i class="fas fa-check-circle"></i>
+                    Active Software
+                </h2>
+                <a href="{{ url_for('software_inventory', filter='active') }}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="software-grid">
+                {% for software in active_software %}
+                <div class="software-card">
+                    <span class="badge badge-active">Active</span>
+                    <div class="software-header">
+                        <div class="software-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="software-info">
+                            <h3 class="software-name">{{ software.name }}</h3>
+                            <div class="software-vendor">{{ software.vendor }}</div>
+                        </div>
+                    </div>
+                    <div class="software-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Licenses Used</div>
+                            <div class="stat-value">{{ software.used_licenses }}/{{ software.total_licenses }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Cost/License</div>
+                            <div class="stat-value">${{ "%.2f"|format(software.cost_per_license) }}</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar {{ 'high' if software.usage_percentage >= 80 else 'medium' if software.usage_percentage >= 30 else 'low' }}"
+                                 style="width: {{ software.usage_percentage }}%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Expiring Software Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <i class="fas fa-clock"></i>
+                    Expiring Soon
+                </h2>
+                <a href="{{ url_for('software_inventory', filter='expiring') }}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="software-grid">
+                {% for software in expiring_software %}
+                <div class="software-card">
+                    <span class="badge badge-expiring">{{ software.days_until_renewal }} days left</span>
+                    <div class="software-header">
+                        <div class="software-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="software-info">
+                            <h3 class="software-name">{{ software.name }}</h3>
+                            <div class="software-vendor">{{ software.vendor }}</div>
+                        </div>
+                    </div>
+                    <div class="software-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Renewal Date</div>
+                            <div class="stat-value">{{ software.renewal_date.strftime('%Y-%m-%d') }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Cost</div>
+                            <div class="stat-value">${{ "%.2f"|format(software.total_cost) }}</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar {{ 'high' if software.usage_percentage >= 80 else 'medium' if software.usage_percentage >= 30 else 'low' }}"
+                                 style="width: {{ software.usage_percentage }}%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Expired Software Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Expired
+                </h2>
+                <a href="{{ url_for('software_inventory', filter='expired') }}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="software-grid">
+                {% for software in expired_software %}
+                <div class="software-card">
+                    <span class="badge badge-expired">Expired</span>
+                    <div class="software-header">
+                        <div class="software-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="software-info">
+                            <h3 class="software-name">{{ software.name }}</h3>
+                            <div class="software-vendor">{{ software.vendor }}</div>
+                        </div>
+                    </div>
+                    <div class="software-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Expired On</div>
+                            <div class="stat-value">{{ software.renewal_date.strftime('%Y-%m-%d') }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Cost</div>
+                            <div class="stat-value">${{ "%.2f"|format(software.total_cost) }}</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar {{ 'high' if software.usage_percentage >= 80 else 'medium' if software.usage_percentage >= 30 else 'low' }}"
+                                 style="width: {{ software.usage_percentage }}%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Low Usage Software Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <i class="fas fa-chart-line"></i>
+                    Low Usage
+                </h2>
+                <a href="{{ url_for('software_inventory', filter='low') }}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="software-grid">
+                {% for software in software_list if software.usage_percentage < 30 %}
+                <div class="software-card">
+                    <span class="badge badge-low">{{ "%.1f"|format(software.usage_percentage) }}% Usage</span>
+                    <div class="software-header">
+                        <div class="software-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="software-info">
+                            <h3 class="software-name">{{ software.name }}</h3>
+                            <div class="software-vendor">{{ software.vendor }}</div>
+                        </div>
+                    </div>
+                    <div class="software-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Licenses Used</div>
+                            <div class="stat-value">{{ software.used_licenses }}/{{ software.total_licenses }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Potential Savings</div>
+                            <div class="stat-value">${{ "%.2f"|format((software.total_licenses - software.used_licenses) * software.cost_per_license) }}</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar low" style="width: {{ software.usage_percentage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-orange: #ff6b35;
+    --light-orange: #fff0eb;
+    --white: #ffffff;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--light-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.stat-icon i {
+    color: var(--primary-orange);
+    font-size: 1.5rem;
+}
+
+.stat-title {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.progress {
+    height: 8px;
+    background: var(--light-orange);
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    background: var(--primary-orange);
+    border-radius: 4px;
+}
+
+.software-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.software-card:hover {
+    transform: translateY(-5px);
+}
+
+.software-card .title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.software-card .subtitle {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.usage-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.badge.bg-success {
+    background-color: #68d391 !important;
+}
+
+.badge.bg-warning {
+    background-color: #f6ad55 !important;
+    color: #744210;
+}
+
+.badge.bg-danger {
+    background-color: #fc8181 !important;
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-circle i {
+    font-size: 1.25rem;
+}
+
+.card-header {
+    padding: 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.border-success {
+    border-left: 4px solid var(--bs-success) !important;
+}
+
+.border-warning {
+    border-left: 4px solid var(--bs-warning) !important;
+}
+
+.border-danger {
+    border-left: 4px solid var(--bs-danger) !important;
+}
+
+/* Section headers */
+.section-header {
+    margin: 1rem 0;
+    padding: 0 0.5rem;
+}
+
+.section-header h5 {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+/* Software sections */
+.software-section {
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+}
+
+/* Charts section */
+.charts-section {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    margin-left: 0.5rem;
+}
+
+canvas {
+    min-height: 250px;
+}
+
+/* Grid spacing */
+.g-4 {
+    --bs-gutter-x: 2rem;
+    --bs-gutter-y: 1.5rem;
+}
+
+.row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.col-xl-3, .col-lg-8, .col-lg-4, .col-md-6 {
+    padding: 0.5rem;
+}
+
+.main-content {
+    padding: 2rem;
+    max-width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="stat-title">Total Software</div>
+                <div class="stat-value">{{ stats.total_software }}</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="stat-title">Total Licenses</div>
+                <div class="stat-value">{{ stats.total_licenses }}</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ stats.utilization }}%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-title">Used Licenses</div>
+                <div class="stat-value">{{ stats.used_licenses }}</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ (stats.used_licenses / stats.total_licenses * 100) if stats.total_licenses > 0 else 0 }}%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-title">Utilization</div>
+                <div class="stat-value">{{ "%.1f"|format(stats.utilization) }}%</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ stats.utilization }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Software -->
+    <div class="row">
+        <div class="col-12">
+            <h5 class="mb-4">Top Software by Usage</h5>
+            <div class="row g-4">
+                {% for software in top_software %}
+                <div class="col-md-4">
+                    <div class="software-card">
+                        <h6 class="mb-2">{{ software.name }}</h6>
+                        <p class="text-muted mb-3">{{ software.vendor }}</p>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Usage</span>
+                            <span class="fw-bold">{{ "%.1f"|format(software.usage_percentage) }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ software.usage_percentage }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <span class="text-muted">Licenses</span>
+                            <span>{{ software.used_licenses }}/{{ software.total_licenses }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add any dashboard-specific JavaScript here
+</script>
+{% endblock %} 

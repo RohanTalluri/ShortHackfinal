@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-orange: #ff6b35;
+    --light-orange: #fff0eb;
+    --white: #ffffff;
+    --gray-100: #f7fafc;
+    --gray-200: #edf2f7;
+    --gray-300: #e2e8f0;
+    --gray-400: #cbd5e0;
+    --gray-500: #a0aec0;
+    --gray-600: #718096;
+    --gray-700: #4a5568;
+    --gray-800: #2d3748;
+}
+
+.reports-container {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #f8fafc;
+}
+
+.filters-section {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.filters-content {
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.export-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+.filter-group {
+    flex: 1;
+}
+
+.filter-group label {
+    display: block;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 0.625rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    color: var(--gray-800);
+    background: var(--white);
+    transition: all 0.2s;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 2px var(--light-orange);
+    outline: none;
+}
+
+.btn-export {
+    background: var(--primary-orange);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(255, 107, 53, 0.2);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.btn-export i {
+    font-size: 1.1rem;
+}
+
+.report-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.report-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.report-title {
+    color: var(--gray-800);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-title i {
+    color: var(--primary-orange);
+}
+
+.report-body {
+    padding: 1.5rem;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--gray-100);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-label {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    color: var(--gray-800);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.trend-up {
+    color: #38a169;
+}
+
+.trend-down {
+    color: #e53e3e;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+}
+
+.report-table th {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.report-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-800);
+}
+
+.report-table tr:last-child td {
+    border-bottom: none;
+}
+
+.report-table tr:hover td {
+    background: var(--gray-100);
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.badge-warning {
+    background: #feebc8;
+    color: #c05621;
+}
+
+.badge-danger {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    height: 300px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reports-container">
+    <!-- Filters Section -->
+    <div class="filters-section">
+        <div class="filters-content">
+            <div class="filter-group">
+                <label for="startDate">From Date</label>
+                <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="filter-group">
+                <label for="endDate">To Date</label>
+                <input type="date" id="endDate" class="form-control">
+            </div>
+            <div class="filter-group">
+                <label for="departmentFilter">Department</label>
+                <select id="departmentFilter" class="form-select">
+                    <option value="all">All Departments</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="sales">Sales</option>
+                    <option value="hr">HR</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="export-section">
+        <a href="{{ url_for('export_report') }}" class="btn-export">
+            <i class="fas fa-file-export"></i>
+            Export Report
+        </a>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="report-card">
+        <div class="report-header">
+            <h5 class="report-title">
+                <i class="fas fa-chart-pie"></i>
+                Overview
+            </h5>
+        </div>
+        <div class="report-body">
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Software</div>
+                    <div class="stat-value">{{ total_software }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Cost</div>
+                    <div class="stat-value">${{ "{:,.2f}".format(total_cost) }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">License Utilization</div>
+                    <div class="stat-value">{{ "{:.1f}%".format(avg_usage) }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Expiring Soon</div>
+                    <div class="stat-value">{{ expiring_soon|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest of the content -->
+    {% include 'reports/_charts.html' %}
+    {% include 'reports/_detailed.html' %}
+</div>
+{% endblock %} 

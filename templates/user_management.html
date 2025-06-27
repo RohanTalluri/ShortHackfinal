@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-orange: #ff6b35;
+    --light-orange: #fff0eb;
+    --white: #ffffff;
+    --gray-100: #f7fafc;
+    --gray-200: #edf2f7;
+    --gray-300: #e2e8f0;
+    --gray-400: #cbd5e0;
+    --gray-500: #a0aec0;
+    --gray-600: #718096;
+    --gray-700: #4a5568;
+    --gray-800: #2d3748;
+}
+
+.user-management-container {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #f8fafc;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--light-orange);
+    color: var(--primary-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.users-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-title {
+    color: var(--gray-800);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-title i {
+    color: var(--primary-orange);
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.users-table th {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.users-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-800);
+}
+
+.users-table tr:last-child td {
+    border-bottom: none;
+}
+
+.users-table tr:hover td {
+    background: var(--gray-100);
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-admin {
+    background: var(--light-orange);
+    color: var(--primary-orange);
+}
+
+.badge-user {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.page-link {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--gray-600);
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    background: var(--light-orange);
+    color: var(--primary-orange);
+    border-color: var(--primary-orange);
+}
+
+.page-link.active {
+    background: var(--primary-orange);
+    color: var(--white);
+    border-color: var(--primary-orange);
+}
+
+.btn-add-user {
+    background: var(--primary-orange);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-add-user:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="user-management-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="stat-value">{{ admin_users }}</div>
+            <div class="stat-label">Admin Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="stat-value">{{ active_users }}</div>
+            <div class="stat-label">Active Today</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="stat-value">{{ new_users }}</div>
+            <div class="stat-label">New This Month</div>
+        </div>
+    </div>
+
+    <div class="users-card">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="fas fa-users"></i>
+                User Management
+            </h5>
+            <button class="btn-add-user" onclick="showAddUserModal()">
+                <i class="fas fa-plus"></i>
+                Add User
+            </button>
+        </div>
+        <div class="p-4">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Last Login</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span class="badge {% if user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</td>
+                        <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editUser({{ user.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteUser({{ user.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if pages > 1 %}
+            <div class="pagination">
+                {% if has_prev %}
+                <a href="{{ url_for('user_management', page=prev_num) }}" class="page-link">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for page in range(1, pages + 1) %}
+                <a href="{{ url_for('user_management', page=page) }}" 
+                   class="page-link {% if page == current_page %}active{% endif %}">
+                    {{ page }}
+                </a>
+                {% endfor %}
+
+                {% if has_next %}
+                <a href="{{ url_for('user_management', page=next_num) }}" class="page-link">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

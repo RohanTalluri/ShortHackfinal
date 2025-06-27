@@ -1,0 +1,87 @@
+<!-- Detailed Reports -->
+<div class="report-card">
+    <div class="report-header">
+        <h5 class="report-title">
+            <i class="fas fa-table"></i>
+            Detailed Reports
+        </h5>
+    </div>
+    <div class="report-body">
+        <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#expiringLicenses">
+                    Expiring Licenses
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#underutilized">
+                    Underutilized Software
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="expiringLicenses">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Software</th>
+                            <th>Vendor</th>
+                            <th>Renewal Date</th>
+                            <th>Days Left</th>
+                            <th>Cost</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for software in expiring_soon %}
+                        <tr>
+                            <td>{{ software.name }}</td>
+                            <td>{{ software.vendor }}</td>
+                            <td>{{ software.renewal_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ software.days_until_renewal }}</td>
+                            <td>${{ "{:,.2f}".format(software.total_cost) }}</td>
+                            <td>
+                                <span class="badge {% if software.days_until_renewal <= 7 %}badge-danger
+                                                  {% elif software.days_until_renewal <= 30 %}badge-warning
+                                                  {% else %}badge-success{% endif %}">
+                                    {% if software.days_until_renewal <= 7 %}Critical
+                                    {% elif software.days_until_renewal <= 30 %}Warning
+                                    {% else %}OK{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="underutilized">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Software</th>
+                            <th>Vendor</th>
+                            <th>Usage</th>
+                            <th>Total Licenses</th>
+                            <th>Used Licenses</th>
+                            <th>Potential Savings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for software in underutilized %}
+                        <tr>
+                            <td>{{ software.name }}</td>
+                            <td>{{ software.vendor }}</td>
+                            <td>{{ "{:.1f}%".format(software.usage_percentage) }}</td>
+                            <td>{{ software.total_licenses }}</td>
+                            <td>{{ software.used_licenses }}</td>
+                            <td>${{ "{:,.2f}".format((software.total_licenses - software.used_licenses) * software.cost_per_license) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> 

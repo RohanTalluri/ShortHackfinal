@@ -1,0 +1,76 @@
+<!-- Charts -->
+<div class="chart-grid">
+    <div class="chart-container">
+        <canvas id="licenseUsageChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="costDistributionChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // License Usage Chart
+    const licenseUsageCtx = document.getElementById('licenseUsageChart').getContext('2d');
+    new Chart(licenseUsageCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ software_list|map(attribute='name')|list|tojson }},
+            datasets: [{
+                label: 'License Usage (%)',
+                data: {{ software_list|map(attribute='usage_percentage')|list|tojson }},
+                backgroundColor: '#ff6b35',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'License Usage by Software',
+                    padding: 20
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Cost Distribution Chart
+    const costDistributionCtx = document.getElementById('costDistributionChart').getContext('2d');
+    new Chart(costDistributionCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ software_list|map(attribute='name')|list|tojson }},
+            datasets: [{
+                data: {{ software_list|map(attribute='total_cost')|list|tojson }},
+                backgroundColor: [
+                    '#ff6b35',
+                    '#ff9666',
+                    '#2c3e50',
+                    '#68d391',
+                    '#f6ad55'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Cost Distribution',
+                    padding: 20
+                }
+            }
+        }
+    });
+});
+</script> 
